@@ -22,9 +22,7 @@ require.config({
 
 require(['seedrandom', 'raphael', 'g.pie'], function (seedrandom) {
 	'use strict';
-	// use app here
 
-	// console.log(Raphael.fn.g.piechart);
 	var r = Raphael("wheel", 800, 600),
 
 	legend = ["Midi", "12h01", "12h02", "12h03", "12h04", "12h05", "12h06", "12h07", "12h08", "12h09", "12h10", "12h11", "12h12", "12h13", "12h14", "midi-écart"],
@@ -36,15 +34,19 @@ require(['seedrandom', 'raphael', 'g.pie'], function (seedrandom) {
 		colors: ["#051039", "#FF0000", "#AED0CF", "#CDCDCD", "#ADA59A", "#ECB813", "#FF4B00", "#BAC900", "#595959", "#D2204C", "#55BCBE", "#3E647E", "#8F7092", "#EC7413", "#6F8793", "#526180"]
 	});
 
+	// Initialize the random seed because we want the same hour for everybody
 	var today = new Date();
-
 	Math.seedrandom(""+today.getDate()+"-"+today.getMonth()+"-"+today.getYear());
+
+	// No jQuery this time
 	var midi = document.getElementById("midi").firstChild,
 		wheel = document.getElementById("wheel");
 
+	// When the user start the animation
 	wheel.className = 'click';
 	wheel.onclick = function() {
 
+		// Get the final angle
 		var max = 32,
 			min = 48,
 			angle = Math.floor((Math.random() * ((max + 1) - min)) + min);
@@ -52,54 +54,45 @@ require(['seedrandom', 'raphael', 'g.pie'], function (seedrandom) {
 		angle *= -360/16.0;
 
 		var oldIndex = 0;
+		// While the animation is running
 		var getCurrentTime = window.setInterval(function() {
-			// try {
+			try {
+				// Get the current angle (weird method)
 				var angle = (-pie.series[0].transform()[0][1]+11.25)%360;
 				if (angle < 0) angle += 360;
 
 				var currentIndex = parseInt((angle/360.0)*16);
 
+				// If the current index is not the same
 				if (currentIndex != oldIndex) {
-					// console.log(pie.labels);
+
+					// Put the label in bold
 					pie.labels[currentIndex].attr({"font-weight": 800});
 					pie.labels[oldIndex].attr({"font-weight": 400});
+
+					// Put a stroke on the selected option
 					pie.series[currentIndex].attr({"stroke": "black", "stroke-width": 4}).toFront();
 					pie.series[oldIndex].attr({"stroke": false});
-					// console.log(legend[currentIndex]);
+
+					// Set the page title
 					midi.data = legend[currentIndex];
 				}
 
 				oldIndex = currentIndex;
-			// } catch (e) {console.log(e)}
+			} catch (e) {console.log(e)}
 		}, 33);
 
+		// RaphaelJS is funny
 		pie.series.animate({transform:"r"+angle+",400,300"}, 12000, "cubic-bezier(0,.36,.3,1)", function() {
 			window.clearInterval(getCurrentTime);
 			wheel.className = '';
 		});
 
+		// Wonderfull javascript code here
 		wheel.className = 'wait';
 		wheel.onclick = function() {};
 
 		return false;
 	};
 
-
-	/*pie.hover(function () {
-	this.sector.stop();
-	this.sector.scale(1.1, 1.1, this.cx, this.cy);
-
-	if (this.label) {
-		this.label[0].stop();
-		this.label[0].attr({ r: 7.5 });
-		this.label[1].attr({ "font-weight": 800 });
-	}
-	}, function () {
-	this.sector.animate({ transform: '...s1 1 ' + this.cx + ' ' + this.cy }, 500, "bounce");
-
-	if (this.label) {
-		this.label[0].animate({ r: 5 }, 500, "bounce");
-		this.label[1].attr({ "font-weight": 400 });
-	}
-	});*/
 });
