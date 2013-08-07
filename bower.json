@@ -5,8 +5,13 @@
     "requirejs": "~2.1.4",
     "modernizr": "~2.6.2",
     "jquery": "~1.9.1",
-	"raphael": "~2.1.0",
-	"g.raphael": "~0.4.1"
+    "raphael": "~2.1.0",
+    "g.raphael": "master",
+    "eve-adobe": "~0.2.4",
+	"seedrandom": "1e03564841"
   },
-  "devDependencies": {}
+  "devDependencies": {},
+  "resolutions": {
+    "g.raphael": "master"
+  }
 }
