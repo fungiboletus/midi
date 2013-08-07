@@ -76,6 +76,7 @@ require(['seedrandom', 'raphael', 'g.pie'], function (seedrandom) {
 
 					// Set the page title
 					midi.data = legend[currentIndex];
+					document.title = legend[currentIndex];
 				}
 
 				oldIndex = currentIndex;
