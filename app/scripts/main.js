@@ -31,12 +31,13 @@ require(['seedrandom', 'raphael', 'g.pie'], function (seedrandom) {
 		{ legend: legend,
 		// legendpos: "south",
 		// init: true,
-		colors: ["#051039", "#FF0000", "#AED0CF", "#CDCDCD", "#ADA59A", "#ECB813", "#FF4B00", "#BAC900", "#595959", "#D2204C", "#55BCBE", "#3E647E", "#8F7092", "#EC7413", "#6F8793", "#526180"]
+		colors: ["#FF0000", "#AED0CF", "#CDCDCD", "#ADA59A", "#ECB813", "#FF4B00", "#BAC900", "#595959", "#D2204C", "#55BCBE", "#3E647E", "#8F7092", "#EC7413", "#6F8793", "#526180", "#051039", ],
+		strokewidth: 2.5
 	});
 
 	// Initialize the random seed because we want the same hour for everybody
 	var today = new Date();
-	Math.seedrandom(""+today.getDate()+"-"+today.getMonth()+"-"+today.getYear());
+	Math.seedrandom(today.getDate()+"-"+today.getMonth()+"-"+today.getYear());
 
 	// No jQuery this time
 	var midi = document.getElementById("midi").firstChild,
@@ -44,6 +45,15 @@ require(['seedrandom', 'raphael', 'g.pie'], function (seedrandom) {
 
 	// When the user start the animation
 	wheel.className = 'click';
+
+	// Create a triangle pointer
+	var pointer = r.path("M400,110,391,86,409,86z").attr({"fill": "white", "stroke-width": 2, "stroke": "#051039"});
+
+	// Create a HTML5 sound
+	var sound = document.createElement("audio");
+	sound.src = "glass.ogg";
+	sound.preload = true;
+
 	wheel.onclick = function() {
 
 		// Get the final angle
@@ -53,34 +63,63 @@ require(['seedrandom', 'raphael', 'g.pie'], function (seedrandom) {
 
 		angle *= -360/16.0;
 
-		var oldIndex = 0;
+		var oldIndex = 0,
+			oldAngle = 0;
+
 		// While the animation is running
 		var getCurrentTime = window.setInterval(function() {
-			try {
-				// Get the current angle (weird method)
-				var angle = (-pie.series[0].transform()[0][1]+11.25)%360;
-				if (angle < 0) angle += 360;
+			// Get the current angle (weird method)
+			var angle = (-pie.series[0].transform()[0][1]+11.25)%360;
+			if (angle < 0) angle += 360;
 
-				var currentIndex = parseInt((angle/360.0)*16);
+			var currentIndex = parseInt((angle/360.0)*16);
+			// 	var t = "r"+((pie.series[0].transform()[0][1]+11.25%360)%16)+",400,300";
+			// 	console.log(currentIndex, t);
+			// 	pointer.attr({transform: t});
 
-				// If the current index is not the same
-				if (currentIndex != oldIndex) {
+			// If the current index is not the same
+			if (currentIndex != oldIndex) {
 
-					// Put the label in bold
-					pie.labels[currentIndex].attr({"font-weight": 800});
-					pie.labels[oldIndex].attr({"font-weight": 400});
+				// Identifiate the speed
+				var diff = Math.abs(oldAngle-angle);
 
-					// Put a stroke on the selected option
-					pie.series[currentIndex].attr({"stroke": "black", "stroke-width": 4}).toFront();
-					pie.series[oldIndex].attr({"stroke": false});
+				// Animate the pointer
+				pointer.stop().animate({transform: "r52,400,86"}, 90/diff, ">", function() {
 
-					// Set the page title
-					midi.data = legend[currentIndex];
-					document.title = legend[currentIndex];
+					// Artificial delay if it's the end of animations
+					var obj = this;
+					if (diff < 2.8) {
+						window.setTimeout(function() {
+							obj.animate({transform:""}, 666, "bounce");
+						}, 130/diff);
+					} else {
+						this.animate({transform:""}, 666, "bounce");
+					}
+				});
+
+				// Put the label in bold
+				pie.labels[currentIndex].attr({"font-weight": 800});
+				pie.labels[oldIndex].attr({"font-weight": 400});
+
+				// Put a stroke on the selected option
+				pie.series[currentIndex].attr({"stroke": "#051039"}).toFront();
+				pointer.toFront();
+				pie.series[oldIndex].animate({"stroke": "#FFF"}, 200, ">");
+
+				// Set the page title
+				midi.data = legend[currentIndex];
+				document.title = legend[currentIndex];
+
+				// Play the ding sound
+				if (sound.pause && sound.play) {
+					sound.pause();
+					sound.currentTime = 0;
+					sound.play();
 				}
+			}
 
-				oldIndex = currentIndex;
-			} catch (e) {console.log(e)}
+			oldIndex = currentIndex;
+			oldAngle = angle;
 		}, 33);
 
 		// RaphaelJS is funny

@@ -6,12 +6,9 @@
     "modernizr": "~2.6.2",
     "jquery": "~1.9.1",
     "raphael": "~2.1.0",
-    "g.raphael": "master",
+    "g.raphael": "#master",
     "eve-adobe": "~0.2.4",
-	"seedrandom": "1e03564841"
+    "seedrandom": "#master"
   },
-  "devDependencies": {},
-  "resolutions": {
-    "g.raphael": "master"
-  }
+  "devDependencies": {}
 }
