@@ -91,7 +91,7 @@ require(['seedrandom', 'raphael', 'g.pie'], function (seedrandom) {
 					if (diff < 2.8) {
 						window.setTimeout(function() {
 							obj.animate({transform:""}, 666, "bounce");
-						}, 130/diff);
+						}, parseInt(130/diff));
 					} else {
 						this.animate({transform:""}, 666, "bounce");
 					}
@@ -110,12 +110,14 @@ require(['seedrandom', 'raphael', 'g.pie'], function (seedrandom) {
 				midi.data = legend[currentIndex];
 				document.title = legend[currentIndex];
 
-				// Play the ding sound
-				if (sound.pause && sound.play) {
-					sound.pause();
-					sound.currentTime = 0;
-					sound.play();
-				}
+				try {
+					// Play the ding sound
+					if (sound.pause && sound.play) {
+						sound.pause();
+						sound.currentTime = 0;
+						sound.play();
+					}
+				} catch (e) {}
 			}
 
 			oldIndex = currentIndex;
