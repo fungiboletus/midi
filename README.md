@@ -1,6 +1,6 @@
 Midi : When to eat ?
 
-*Demo*: http://yellowiscool.github.io/midi/
+*Demo*: https://fungiboletus.github.io/midi/
 
  * Yeoman
  * RaphaelJS
